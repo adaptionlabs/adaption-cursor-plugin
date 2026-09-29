@@ -23,17 +23,18 @@ Then in Cursor: **Settings** → **Plugins** → **Install from path** → selec
 ### Get Your API Key
 
 1. Go to [app.adaptionlabs.ai/settings/api-keys](https://app.adaptionlabs.ai/settings/api-keys)
-2. Create a new API key with `adaption-mcp:read` and `adaption-mcp:write` scopes
+2. Create a new API key
 3. Copy the key and enter it in the plugin configuration
 
 ## Features
 
 ### 📊 Dataset Management
 
-- Upload datasets (CSV, JSON, Parquet)
-- Import from HuggingFace or Kaggle
-- Launch adaptation pipelines
-- Download processed results
+- Import datasets from HuggingFace, Kaggle, or Google Sheets
+- Run adaptation pipelines
+- Augment, translate, and localize datasets
+- Combine multiple datasets
+- Export processed results
 
 ### 🎯 Fine-tuning
 
@@ -41,29 +42,29 @@ Then in Cursor: **Settings** → **Plugins** → **Install from path** → selec
 - Launch training jobs
 - Monitor training progress
 
-### 🔬 AutoScientist
+### 🔬 Invent
 
-- Generate synthetic datasets
-- Run Invent workflows for domain-specific data
-- Optimize data quality automatically
+- Generate synthetic training datasets
+- Explore available domains and subdomains
+- Create domain-specific data from specifications
 
 ## Available Skills
 
 | Skill | Description |
 |-------|-------------|
-| `adaption-dataset` | Dataset upload, processing, and adaptation |
-| `adaption-training` | Fine-tuning job management |
-| `adaption-autoscientist` | Synthetic data generation and optimization |
+| `adaption-dataset` | Dataset import, processing, and transformation |
+| `adaption-training` | AutoScientist training runs |
+| `adaption-invent` | Synthetic data generation |
 
 ## Example Usage
 
 Once installed, you can interact with Adaption through natural conversation:
 
-> "Upload my training_data.csv and adapt it for fine-tuning"
+> "Import this HuggingFace dataset and adapt it for fine-tuning"
 
 > "Start fine-tuning llama-3.1-8b on my adapted dataset"
 
-> "Generate 1000 customer service examples using AutoScientist"
+> "Generate 1000 customer service examples using Invent"
 
 > "Check the status of my training job"
 
