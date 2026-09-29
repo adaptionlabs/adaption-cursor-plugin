@@ -1,0 +1,32 @@
+{
+  "name": "adaption",
+  "version": "0.1.0",
+  "description": "Adaption plugin for Cursor — datasets, fine-tuning, and AutoScientist workflows powered by the Adaption MCP server",
+  "author": {
+    "name": "Adaption Labs",
+    "email": "support@adaptionlabs.ai"
+  },
+  "homepage": "https://adaptionlabs.ai",
+  "repository": "https://github.com/adaptionlabs/adaption-cursor-plugin",
+  "license": "MIT",
+  "keywords": [
+    "adaption",
+    "datasets",
+    "fine-tuning",
+    "autoscientist",
+    "mcp",
+    "ai-training"
+  ],
+  "logo": "assets/logo.svg",
+  "variables": {
+    "type": "object",
+    "properties": {
+      "ADAPTION_API_KEY": {
+        "type": "string",
+        "title": "Adaption API Key",
+        "description": "Your API key from https://app.adaptionlabs.ai/settings/api-keys"
+      }
+    },
+    "required": ["ADAPTION_API_KEY"]
+  }
+}

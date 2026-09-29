@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "adaption": {
+      "url": "https://api.adaption.ai/api/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer ${ADAPTION_API_KEY}"
+      }
+    }
+  }
+}
