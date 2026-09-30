@@ -1,7 +1,7 @@
 {
   "name": "adaption",
   "version": "0.1.0",
-  "description": "Adaption plugin for Cursor — datasets, fine-tuning, and AutoScientist workflows powered by the Adaption MCP server",
+  "description": "Adaption plugin for Cursor — datasets and fine-tuning workflows powered by the Adaption MCP server",
   "author": {
     "name": "Adaption Labs",
     "email": "support@adaptionlabs.ai"
@@ -24,7 +24,7 @@
       "ADAPTION_API_KEY": {
         "type": "string",
         "title": "Adaption API Key",
-        "description": "Your API key from https://app.adaptionlabs.ai/settings/api-keys"
+        "description": "Your API key from https://adaptionlabs.ai/app/settings?tab=api_keys"
       }
     },
     "required": ["ADAPTION_API_KEY"]

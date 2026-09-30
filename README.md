@@ -1,6 +1,6 @@
 # Adaption Plugin for Cursor
 
-Connect Cursor to [Adaption](https://adaptionlabs.ai) for dataset management, fine-tuning, and AutoScientist workflows.
+Connect Cursor to [Adaption](https://adaptionlabs.ai) for dataset management and fine-tuning workflows.
 
 ## Installation
 
@@ -77,7 +77,7 @@ revert before committing.
 
 ### Get Your API Key
 
-1. Go to [app.adaptionlabs.ai/settings/api-keys](https://app.adaptionlabs.ai/settings/api-keys)
+1. Go to [adaptionlabs.ai/app/settings](https://adaptionlabs.ai/app/settings?tab=api_keys)
 2. Create a new API key
 3. Copy the key and enter it in the plugin configuration
 
@@ -126,8 +126,7 @@ Once installed, you can interact with Adaption through natural conversation:
 ## Requirements
 
 - Cursor IDE
-- Adaption account with API access
-- API key with MCP scopes
+- An Adaption account with an API key
 
 ## Support
 

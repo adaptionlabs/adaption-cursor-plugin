@@ -7,8 +7,7 @@
   "plugins": [
     {
       "name": "adaption",
-      "source": ".",
-      "description": "Adaption plugin for Cursor — datasets, fine-tuning, and AutoScientist workflows powered by the Adaption MCP server"
+      "source": "."
     }
   ]
 }
