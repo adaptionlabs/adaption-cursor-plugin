@@ -18,6 +18,14 @@
     "ai-training"
   ],
   "logo": "assets/logo.svg",
+  "mcpServers": {
+    "adaption": {
+      "url": "https://api.adaption.ai/api/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer ${ADAPTION_API_KEY}"
+      }
+    }
+  },
   "variables": {
     "type": "object",
     "properties": {
