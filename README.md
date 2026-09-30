@@ -71,9 +71,9 @@ Until `ADAPTION_API_KEY` holds a valid key, the server fails with
 `403 Only API keys are permitted on this endpoint` and exposes no tools. The
 endpoint accepts an Adaption API key only — not a session or OAuth token.
 
-Both `mcp.json` and `.cursor-plugin/plugin.json` ship the production endpoint. To
-test against dev, point `url` at `https://api.dev.adaptionlabs.ai/api/v1/mcp` in
-both files before running the script, and revert before committing.
+`mcp.json` ships the production endpoint. To test against dev, point `url` at
+`https://api.dev.adaptionlabs.ai/api/v1/mcp` before running the script, and
+revert before committing.
 
 ### Get Your API Key
 
