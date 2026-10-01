@@ -39,7 +39,18 @@ Use these tools via the Adaption MCP server:
 
 ### Import and adapt a HuggingFace dataset
 
-1. Call `import_dataset` with HuggingFace URL
+1. Call `import_dataset` with a `source` object — all import options nest inside it:
+   ```json
+   {
+     "source": {
+       "url": "https://huggingface.co/datasets/squad",
+       "files": ["plain_text/train-00000-of-00001.parquet"]
+     }
+   }
+   ```
+   `files` is required for HuggingFace and Kaggle imports and rejected for Google
+   Sheets. Pass `processing_mode: "raw"` to import a trainable dataset without
+   running Adaptive Data.
 2. Poll `get_dataset_status` until processing completes
 3. Call `run_dataset_adaptation` with `estimate: true` to preview cost
 4. Call `run_dataset_adaptation` with column mapping to launch
@@ -62,14 +73,23 @@ Use these tools via the Adaption MCP server:
 1. Call `translate_dataset` with:
    - `dataset_id`: Source dataset ID
    - `languages`: Array of target language codes
-   - `sample_size`: Number of rows to translate
+   - `sample_rate`: Share of rows to translate, between 0.01 and 1
+   - `estimate: true` for cost preview
 2. Poll `get_dataset_status` until translation completes
+
+`localize_dataset` takes the same `sample_rate` but replaces `languages` with
+`pairs`, an array of `{ "country": "RS", "language": "sr" }` objects.
 
 ### Combine multiple datasets
 
 1. Ensure all source datasets have compatible schemas and status `ready`
-2. Call `combine_datasets` with array of dataset IDs
-3. Use `idempotency_key` to prevent duplicate combinations
+2. Call `combine_datasets` with:
+   - `dataset_ids`: 2 to 10 unique dataset IDs, each a UUID v4
+   - `name`: Required name for the combined dataset
+   - `idempotency_key`: Required — reusing the same key returns the same result
+     instead of combining twice
+
+All sources must belong to the same organization.
 
 ## Column Mapping
 

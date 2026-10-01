@@ -38,7 +38,7 @@ After generation starts, use dataset tools to track progress:
    ```json
    {
      "domains": ["technology"],
-     "subdomains": ["software_development"],
+     "subdomains": ["technology.software_applications"],
      "rows": 1000,
      "estimate": true
    }
@@ -52,9 +52,9 @@ After generation starts, use dataset tools to track progress:
 ```json
 {
   "name": "Customer Support QA",
-  "training_type": "chat",
-  "domains": ["business"],
-  "subdomains": ["customer_service"],
+  "training_type": "instruction_dataset",
+  "domains": ["corporate_business"],
+  "subdomains": ["corporate_business.customer_service"],
   "rows": 500,
   "dataset_prompt": "Generate realistic customer questions about technical software product support scenarios"
 }
@@ -62,43 +62,71 @@ After generation starts, use dataset tools to track progress:
 
 ### Generate with language expansion
 
+`language_expansion` is either a `translate` or a `localize` spec, and `type` is
+required. `sample_rate` (0.01-1) is the share of rows expanded. Credits are
+billed on the post-expansion row count, so this quotes above `rows`.
+
 ```json
 {
-  "domains": ["education"],
-  "subdomains": ["tutoring"],
+  "domains": ["academic_education"],
+  "subdomains": ["academic_education.stem"],
   "rows": 1000,
   "language_expansion": {
+    "type": "translate",
     "languages": ["es", "fr", "de"],
-    "rows_per_language": 200
+    "sample_rate": 0.2
   }
 }
 ```
 
-## Domain Categories
+To localize for country/language pairs instead:
 
-Domains span many categories including:
+```json
+{
+  "language_expansion": {
+    "type": "localize",
+    "pairs": [{ "country": "RS", "language": "sr" }],
+    "sample_rate": 0.2
+  }
+}
+```
 
-- **Technology**: Software development, APIs, DevOps, data science
-- **Business**: Customer service, sales, marketing, operations
-- **Science**: Research methodology, analysis, experiments
-- **Education**: Tutoring, explanations, assessments, curricula
-- **Creative**: Writing, content creation, storytelling
+## Domains and subdomains
 
-Use `list_invent_domains` to see the full catalog with qualified subdomain codes.
+Domain codes are flat lowercase strings such as `technology`, `medical`, `legal`,
+`code`, `corporate_business`, `academic_education`, and `personal_finance`.
+Subdomain codes are always qualified with their domain as `domain.subdomain`,
+for example `medical.symptoms_diagnosis` — a bare code can belong to more than
+one domain, so an unqualified value is rejected.
+
+Call `list_invent_domains` for the full catalog with the exact codes. A subdomain
+naming a domain that is not in your `domains` array is rejected rather than
+silently added.
 
 ## Parameters
 
+`rows` is always required, plus at least one of `dataset_prompt`, `domains`, or
+`subdomains`. With both taxonomy fields omitted, `dataset_prompt` is required and
+the taxonomy is inferred from it; if nothing can be inferred the request is
+rejected rather than generating across every domain. Supplying `domains` or
+`subdomains` disables that inference.
+
 | Parameter | Description |
 |-----------|-------------|
-| `name` | Optional name for the generated dataset |
-| `training_type` | Training format (e.g., `chat`, `completion`) |
-| `domains` | Required array of domain codes |
-| `subdomains` | Optional array of subdomain codes |
-| `rows` | Required number of rows to generate |
-| `language_expansion` | Optional multi-language generation config |
-| `dataset_prompt` | Optional generation guidance for the dataset |
+| `rows` | Required number of rows to generate, subject to your plan's per-launch cap |
+| `dataset_prompt` | Free-text description of the data you want, up to 10,000 characters |
+| `domains` | Optional array of domain codes |
+| `subdomains` | Optional array of qualified `domain.subdomain` codes |
+| `training_type` | Shape of the generated data: `instruction_dataset` (default) or `preference_pairs` |
+| `name` | Optional name for the generated dataset, up to 255 characters |
+| `language_expansion` | Optional `translate` or `localize` expansion config |
 | `estimate` | Set `true` to preview cost without launching |
 | `idempotency_key` | Optional key for safe retries |
+
+`training_type` here is the shape of the DATA, not the training method:
+`instruction_dataset` produces prompt/completion rows, `preference_pairs`
+produces ranked completion pairs. The `training_type` inside `hyperparams` on a
+training run is a different field meaning LoRA versus full fine-tuning.
 
 ## Tips
 

@@ -38,10 +38,26 @@ Launch and monitor AutoScientist training runs on the Adaption platform.
 4. Review recommended configuration
 5. Call `create_autoscientist_run` with:
    - `dataset_id`: Your ready dataset
-   - `model`: Base model to fine-tune
-   - `column_mapping`: How columns map to training format
-   - `hyperparams`: Training configuration (or use recommended)
+   - `model`: Optional base model — the platform picks one when omitted
+   - `column_mapping`: Optional, see below — inferred from the dataset when omitted
+   - `hyperparams`: Optional training configuration, or use the recommended one
 6. Poll `get_autoscientist_run` with `experiment_id` until complete
+
+## Column mapping
+
+A training run accepts a different set of roles than dataset adaptation does, and
+unknown keys are dropped silently instead of rejected — so `context`, `chat`, or
+`image` sent here are ignored without an error.
+
+| Role | Use |
+|------|-----|
+| `prompt` | Column holding the instruction text |
+| `completion` | Column holding the target response |
+| `reasoning_trace` | Column holding a reasoning trace, when the dataset has one |
+| `chosen` | Preferred completion, alignment runs only |
+| `rejected` | Rejected completion, alignment runs only |
+
+Omit `column_mapping` entirely and AutoScientist infers it from the dataset.
 
 ### Augment during training
 
@@ -50,7 +66,6 @@ AutoScientist can augment your dataset during training:
 ```json
 {
   "dataset_id": "...",
-  "model": "llama-3.1-8b",
   "augmentation_domain_rows": 1000,
   "augmentation_general_rows": 500
 }
@@ -64,18 +79,45 @@ AutoScientist can augment your dataset during training:
 
 ## Training Configuration
 
-Hyperparameters when creating a run:
+`hyperparams` is validated strictly, so an unknown key fails the whole request.
+Every field is optional — omit what you do not want to pin and AutoScientist
+fills it in from the recommendation.
 
 ```json
 {
   "hyperparams": {
-    "epochs": 3,
+    "training_type": "lora",
+    "n_epochs": 3,
     "learning_rate": 2e-5,
-    "batch_size": 8,
+    "batch_size": "max",
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lr_scheduler_type": "cosine",
     "warmup_ratio": 0.1
   }
 }
 ```
+
+| Parameter | Accepted values |
+|-----------|-----------------|
+| `training_type` | `lora` or `full` — LoRA versus full fine-tuning |
+| `n_epochs` | 1-20 |
+| `learning_rate` | 1e-8 to 1e-2 |
+| `batch_size` | `"max"` or a positive integer |
+| `lora_r` | 1-64 |
+| `lora_alpha` | Must equal `lora_r` or twice `lora_r` |
+| `lora_dropout` | 0-1 |
+| `lora_trainable_modules` | `"all-linear"` or a comma-separated module list |
+| `lr_scheduler_type` | `linear`, `cosine`, or `constant` |
+| `min_lr_ratio` | 0-1 |
+| `scheduler_num_cycles` | 0-4 |
+| `warmup_ratio` | 0-1 |
+| `max_grad_norm` | Non-negative |
+| `weight_decay` | Non-negative |
+| `train_on_inputs` | Boolean |
+| `dpo_beta` | 0.05-0.9, alignment runs only |
+| `dpo_normalize_logratios_by_length` | Boolean, alignment runs only |
+| `rpo_alpha`, `simpo_gamma` | Alignment runs only, and both cannot be positive at once |
 
 ## Training Status
 
