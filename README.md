@@ -99,9 +99,9 @@ revert before committing.
 
 ### 🔬 Invent
 
-- Generate synthetic training datasets
+- Generate synthetic training datasets from natural language descriptions
 - Explore available domains and subdomains
-- Create domain-specific data from specifications
+- Create domain-specific data with no seed data to start from
 
 ## Available Skills
 
@@ -117,7 +117,7 @@ Once installed, you can interact with Adaption through natural conversation:
 
 > "Import this HuggingFace dataset and adapt it for fine-tuning"
 
-> "Start fine-tuning llama-3.1-8b on my adapted dataset"
+> "Start fine-tuning on my adapted dataset and pick a suitable base model"
 
 > "Generate 1000 customer service examples using Invent"
 

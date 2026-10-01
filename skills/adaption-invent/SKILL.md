@@ -1,18 +1,20 @@
 ---
 name: adaption-invent
-description: Generate synthetic datasets using Adaption Invent. Use when creating 
-  AI-generated training data from domain specifications.
+description: Generate synthetic datasets using Adaption's Invent-a-Dataset. Use when 
+  creating post-training datasets from scratch out of natural language descriptions, 
+  to add new capabilities to a language model — especially in a zero-data regime 
+  with no seed data available.
 ---
 
 # Adaption Invent Skill
 
-Generate synthetic training datasets using the Adaption Invent system.
+Generate synthetic training datasets using Adaption's Invent-a-Dataset feature.
 
 ## When to use
 
-- Generate synthetic training datasets from specifications
-- Explore available domains and subdomains for data generation
-- Create domain-specific datasets without source data
+- Generate synthetic training datasets from natural language descriptions
+- Create domain-specific datasets for post-training language models without any
+  seed data to start from
 - Estimate costs before generating data
 
 ## Available MCP Tools
@@ -32,8 +34,12 @@ After generation starts, use dataset tools to track progress:
 
 ### Generate domain-specific training data
 
-1. Call `list_invent_domains` to explore available domains and subdomains
-2. Choose domain and subdomain codes matching your use case
+Steps 1 and 2 are optional — a `dataset_prompt` on its own is enough, and the
+taxonomy is inferred from it. Supply the codes when you want more control over
+what ends up in the dataset.
+
+1. Optionally call `list_invent_domains` to explore available domains and subdomains
+2. Optionally choose domain and subdomain codes matching your use case
 3. Call `generate_dataset` with `estimate: true` to preview cost:
    ```json
    {
@@ -45,7 +51,8 @@ After generation starts, use dataset tools to track progress:
    ```
 4. Review estimate, then launch with `estimate: false`
 5. Poll `get_dataset_status` with returned dataset ID until complete
-6. Generated dataset is ready for adaptation and training
+6. Generated dataset is ready for training — an invented dataset is already a
+   type of adaptive dataset, so it does not need adaptation
 
 ### Generate with custom specifications
 
@@ -57,6 +64,26 @@ After generation starts, use dataset tools to track progress:
   "subdomains": ["corporate_business.customer_service"],
   "rows": 500,
   "dataset_prompt": "Generate realistic customer questions about technical software product support scenarios"
+}
+```
+
+### Control the output through `dataset_prompt`
+
+`dataset_prompt` also carries constraints on output format, tone, and structure,
+which is how you pin the shape of the generated rows. Both examples below omit
+the taxonomy entirely and let it be inferred:
+
+```json
+{
+  "rows": 1000,
+  "dataset_prompt": "Question-answer pairs focusing on legal advice, factual explanations, and comparative analysis across diverse topics such as copyright law, government types, and liability. Questions should offer four choices; answers are limited to A, B, C, or D with no additional text."
+}
+```
+
+```json
+{
+  "rows": 500,
+  "dataset_prompt": "Summaries of used car advertisements in Serbian, featuring detailed descriptions of vehicle conditions, service histories, and equipment packages. Each prompt is an ad summary, and each response is a JSON object containing vehicle_description, service_history, and equipment_packages."
 }
 ```
 
@@ -91,7 +118,7 @@ To localize for country/language pairs instead:
 }
 ```
 
-## Domains and subdomains
+## Domains and Subdomains
 
 Domain codes are flat lowercase strings such as `technology`, `medical`, `legal`,
 `code`, `corporate_business`, `academic_education`, and `personal_finance`.
@@ -136,7 +163,9 @@ run — see the `adaption-training` skill, where that run needs
 
 - Start with smaller row counts (100-500) to validate quality
 - Use a specific `dataset_prompt` for better results
-- Generated data works best when combined with real examples via `augment_dataset`
+- Once an invented dataset covers the target capability, expand it with more
+  domain-specific or general samples via `augment_dataset` to increase size and
+  diversity before training
 - Use `estimate: true` to check credits before launching
 - Launch responses carry a `next_action` naming the tool to call next — follow it
 - Use `idempotency_key` for safe retries if generation fails
