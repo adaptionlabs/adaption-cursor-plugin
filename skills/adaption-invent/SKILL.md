@@ -56,8 +56,7 @@ After generation starts, use dataset tools to track progress:
   "domains": ["business"],
   "subdomains": ["customer_service"],
   "rows": 500,
-  "dataset_prompt": "Focus on technical product support scenarios",
-  "prompt": "Generate realistic customer questions about software issues"
+  "dataset_prompt": "Generate realistic customer questions about technical software product support scenarios"
 }
 ```
 
@@ -97,15 +96,14 @@ Use `list_invent_domains` to see the full catalog with qualified subdomain codes
 | `subdomains` | Optional array of subdomain codes |
 | `rows` | Required number of rows to generate |
 | `language_expansion` | Optional multi-language generation config |
-| `dataset_prompt` | Optional high-level guidance for the dataset |
-| `prompt` | Optional specific generation instructions |
+| `dataset_prompt` | Optional generation guidance for the dataset |
 | `estimate` | Set `true` to preview cost without launching |
 | `idempotency_key` | Optional key for safe retries |
 
 ## Tips
 
 - Start with smaller row counts (100-500) to validate quality
-- Use specific `dataset_prompt` and `prompt` for better results
+- Use a specific `dataset_prompt` for better results
 - Generated data works best when combined with real examples via `augment_dataset`
 - Use `estimate: true` to check credits before launching
 - Use `idempotency_key` for safe retries if generation fails
