@@ -13,7 +13,7 @@ Launch and monitor AutoScientist training runs on the Adaption platform.
 - List available base models for fine-tuning
 - Get recommended hyperparameters for a dataset
 - Launch AutoScientist training runs
-- Monitor training progress and iterations
+- Monitor training progress and results
 - List past training runs
 
 ## Available MCP Tools
@@ -22,8 +22,8 @@ Launch and monitor AutoScientist training runs on the Adaption platform.
 |------|-------------|
 | `list_training_models` | List base models currently available for AutoScientist training |
 | `list_autoscientist_runs` | List AutoScientist runs, optionally filtered to one dataset |
-| `get_autoscientist_run` | Poll one AutoScientist run, including iteration progress and failure messages |
-| `recommend_autoscientist_hyperparameters` | Resolve suitable model and hyperparameters for a dataset without launching |
+| `get_autoscientist_run` | Poll one AutoScientist run, including iteration progress and any public failure message |
+| `recommend_autoscientist_hyperparameters` | Resolve a suitable model and hyperparameters for a ready dataset without launching a run |
 | `create_autoscientist_run` | Launch a new asynchronous AutoScientist training run (spends credits) |
 
 ## Example Workflows
@@ -35,7 +35,10 @@ Launch and monitor AutoScientist training runs on the Adaption platform.
 3. Call `recommend_autoscientist_hyperparameters` with:
    - `dataset_id`: Your ready dataset
    - `model`: Optional preferred base model
-4. Review recommended configuration
+   - `augmentation_domain_rows` and `augmentation_general_rows`: the same values
+     you plan to launch with, since they count toward the dataset size the
+     recommendation is sized for
+4. Review the returned `model` and `hyperparams`
 5. Call `create_autoscientist_run` with:
    - `dataset_id`: Your ready dataset
    - `model`: Optional base model — the platform picks one when omitted
@@ -43,25 +46,30 @@ Launch and monitor AutoScientist training runs on the Adaption platform.
    - `hyperparams`: Optional training configuration, or use the recommended one
 6. Poll `get_autoscientist_run` with `experiment_id` until complete
 
-## Column mapping
+### Train on preference pairs
 
-A training run accepts a different set of roles than dataset adaptation does, and
-unknown keys are dropped silently instead of rejected — so `context`, `chat`, or
-`image` sent here are ignored without an error.
+An alignment run trains on ranked completion pairs instead of prompt/completion
+rows. The dataset must have been prepared for it:
 
-| Role | Use |
-|------|-----|
-| `prompt` | Column holding the instruction text |
-| `completion` | Column holding the target response |
-| `reasoning_trace` | Column holding a reasoning trace, when the dataset has one |
-| `chosen` | Preferred completion, alignment runs only |
-| `rejected` | Rejected completion, alignment runs only |
+1. Generate it with `training_type: "preference_pairs"` — see the
+   `adaption-invent` skill — or adapt an existing dataset with that setting
+2. Call `create_autoscientist_run` with `training_method: "alignment"`
+3. Map `chosen` and `rejected` in `column_mapping` when the columns are not
+   obvious from the dataset
 
-Omit `column_mapping` entirely and AutoScientist infers it from the dataset.
+An alignment run trains in two stages, supervised first and preference second,
+and reports the first stage until the second begins — so it stays `running`
+through the handoff rather than reporting the supervised result as final.
 
-### Augment during training
+### Augment before training
 
-AutoScientist can augment your dataset during training:
+AutoScientist can augment your dataset before training starts. This is useful for
+increasing dataset size or adding data closer to the target capability, since many
+models need larger volumes before showing a reasonable performance lift.
+
+Use `augmentation_domain_rows` for more samples from the domain already present in
+your dataset, and `augmentation_general_rows` for samples from other domains that
+are not in it.
 
 ```json
 {
@@ -76,6 +84,39 @@ AutoScientist can augment your dataset during training:
 1. Call `list_autoscientist_runs` to see all runs
 2. Filter by dataset: `list_autoscientist_runs` with `dataset_id`
 3. Get details: `get_autoscientist_run` with `experiment_id`
+
+## Run Options
+
+`create_autoscientist_run` takes these alongside `dataset_id`:
+
+| Parameter | Description |
+|-----------|-------------|
+| `model` | Base model name from `list_training_models`. The platform picks one when omitted |
+| `training_method` | `instruction` or `alignment`. Derived from the dataset when omitted |
+| `data_format` | `chat` or `instruction`, defaulting to `chat`. Applies to raw datasets only — for an adapted dataset the platform resolves the encoding and this is ignored |
+| `column_mapping` | Which dataset columns feed training, see below |
+| `hyperparams` | Training configuration, see below |
+| `augmentation_domain_rows` | Extra rows from the dataset's own domain |
+| `augmentation_general_rows` | Extra rows from other domains |
+| `max_iterations` | How many iterations AutoScientist may run, up to 5 |
+| `target_win_rate` | Win rate to stop at, between 0.5 and 1 |
+| `idempotency_key` | Key for safe retries |
+
+## Column Mapping
+
+A training run accepts a different set of roles than dataset adaptation does, and
+unknown keys are dropped silently instead of rejected — so `context`, `chat`, or
+`image` sent here are ignored without an error.
+
+| Role | Use |
+|------|-----|
+| `prompt` | Column holding the instruction text |
+| `completion` | Column holding the target response |
+| `reasoning_trace` | Column holding a reasoning trace, when the dataset has one |
+| `chosen` | Preferred completion, alignment runs only |
+| `rejected` | Rejected completion, alignment runs only |
+
+Omit `column_mapping` entirely and AutoScientist infers it from the dataset.
 
 ## Training Configuration
 
@@ -121,14 +162,21 @@ fills it in from the recommendation.
 
 ## Training Status
 
-The `get_autoscientist_run` response includes:
-- Current status and iteration progress
-- Training metrics per iteration
-- Public failure message if failed
+The `get_autoscientist_run` response reports progress as a count of finished
+iterations plus the metrics of the best one — there are no per-iteration metrics:
+
+- `status`, `created_at`, and `completed_at`
+- `iterations_completed` against `max_iterations`
+- `best_win_rate` against `target_win_rate`
+- `best_hyperparams` — the configuration that produced the best iteration
+- `download_available` once a successful run has a trained model
+- `error` with the public failure message when the run failed
 
 ## Tips
 
 - Use `recommend_autoscientist_hyperparameters` before launching to optimize configuration
 - Training runs consume credits — verify dataset is ready first
 - Poll `get_autoscientist_run` every 30-60 seconds during training
-- Include `augmentation_domain_rows` for domain-specific data enrichment
+- Launch responses carry a `next_action` naming the tool to call next — follow it
+- Use `augmentation_domain_rows` for domain-specific enrichment and
+  `augmentation_general_rows` for general or domain-diverse enrichment

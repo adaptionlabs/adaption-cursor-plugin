@@ -128,10 +128,15 @@ rejected rather than generating across every domain. Supplying `domains` or
 produces ranked completion pairs. The `training_type` inside `hyperparams` on a
 training run is a different field meaning LoRA versus full fine-tuning.
 
+Generate with `preference_pairs` when the dataset will feed an alignment training
+run — see the `adaption-training` skill, where that run needs
+`training_method: "alignment"`.
+
 ## Tips
 
 - Start with smaller row counts (100-500) to validate quality
 - Use a specific `dataset_prompt` for better results
 - Generated data works best when combined with real examples via `augment_dataset`
 - Use `estimate: true` to check credits before launching
+- Launch responses carry a `next_action` naming the tool to call next — follow it
 - Use `idempotency_key` for safe retries if generation fails

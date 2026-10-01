@@ -62,11 +62,15 @@ Use these tools via the Adaption MCP server:
 1. Ensure source dataset status is `ready`
 2. Call `augment_dataset` with:
    - `dataset_id`: Source dataset ID
-   - `domain_rows`: Number of domain-specific rows to add
-   - `general_rows`: Number of general rows to add
+   - `domain_rows`: More samples from the domain already present in the dataset
+   - `general_rows`: Samples from other domains not present in it
+   - `training_type`: `instruction_dataset` (default) or `preference_pairs`
    - `estimate: true` for cost preview
 3. Launch with `estimate: false`
 4. Poll `get_dataset_status` on the new dataset ID
+
+Each row count tops out at 100,000 per strategy. Augmenting creates a new dataset
+rather than modifying the source.
 
 ### Translate dataset to multiple languages
 
@@ -99,7 +103,7 @@ When calling `run_dataset_adaptation`, map dataset columns to roles. Full rules:
 - `context` is a list of column names (background or metadata), not a single string.
 - `image` is one column of image bytes, URLs, or paths. Do not put images in `context`.
 - `chat` is one column of multi-turn message arrays. It replaces `prompt`, `completion`, and `context`.
-- `universal_prompt` is a shared instruction string for every row, not a column name. Use it when the dataset has no prompt column.
+- `universal_prompt` is a shared instruction string for every row, not a column name. Use it when the dataset has no prompt column. It requires `context` or `image` to vary each row, and is mutually exclusive with `prompt`.
 
 ```json
 {
@@ -111,9 +115,26 @@ When calling `run_dataset_adaptation`, map dataset columns to roles. Full rules:
 }
 ```
 
+## Adaptation Options
+
+Beyond `column_mapping`, `run_dataset_adaptation` accepts:
+
+| Parameter | Description |
+|-----------|-------------|
+| `training_type` | `instruction_dataset` (default) or `preference_pairs`. Use `preference_pairs` to prepare a dataset for an alignment training run |
+| `recipe_specification` | Toggles for `prompt_rephrase`, `deduplication`, and `reasoning_traces` under a `recipes` object |
+| `brand_controls` | `length` (`minimal`, `concise`, `detailed`, `extensive`), `safety_categories`, `hallucination_mitigation`, and `blueprint` |
+| `job_specification` | `max_rows` to cap the run, plus `idempotency_key` |
+| `language_expansion` | Same `translate`/`localize` spec as dataset generation |
+| `estimate` | Set `true` to preview cost without launching |
+
 ## Tips
 
 - Use `estimate: true` parameter to preview costs before launching operations
-- Poll `get_dataset_status` every 5-10 seconds during processing
+- Poll `get_dataset_status` every 5-10 seconds during processing — it returns
+  `progress_percentage` alongside the status
+- Filter `list_datasets` with `status` (`pending`, `running`, `awaiting_input`,
+  `succeeded`, `failed`) or a `query` string instead of paging through everything
+- Launch responses carry a `next_action` naming the tool to call next — follow it
 - Check `get_dataset_evaluation` for quality metrics after adaptation
 - Use `idempotency_key` for safe retries on launch operations
