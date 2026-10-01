@@ -73,7 +73,13 @@ Use these tools via the Adaption MCP server:
 
 ## Column Mapping
 
-When running adaptation, specify how columns map to training format:
+When calling `run_dataset_adaptation`, map dataset columns to roles. Full rules: https://docs.adaptionlabs.ai/adaptive-data/select-columns/
+
+- `prompt` and `completion` are column names. At least one is required. If the other is missing, Adaptive Data generates it.
+- `context` is a list of column names (background or metadata), not a single string.
+- `image` is one column of image bytes, URLs, or paths. Do not put images in `context`.
+- `chat` is one column of multi-turn message arrays. It replaces `prompt`, `completion`, and `context`.
+- `universal_prompt` is a shared instruction string for every row, not a column name. Use it when the dataset has no prompt column.
 
 ```json
 {
