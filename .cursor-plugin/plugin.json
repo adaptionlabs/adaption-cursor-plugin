@@ -17,7 +17,7 @@
     "mcp",
     "ai-training"
   ],
-  "logo": "assets/logo.svg",
+  "logo": "assets/logo.png",
   "variables": {
     "type": "object",
     "properties": {
