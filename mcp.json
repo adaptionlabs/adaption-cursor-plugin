@@ -2,8 +2,8 @@
   "mcpServers": {
     "adaption": {
       "url": "https://api.prod.adaptionlabs.ai/api/v1/mcp",
-      "headers": {
-        "Authorization": "Bearer ${ADAPTION_API_KEY}"
+      "auth": {
+        "CLIENT_ID": "adaption-cursor-plugin"
       }
     }
   }
