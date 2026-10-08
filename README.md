@@ -2,6 +2,9 @@
 
 Connect Cursor to [Adaption](https://adaptionlabs.ai) for dataset management and fine-tuning workflows.
 
+The plugin signs in to Adaption with OAuth: Cursor opens the Adaption sign-in
+page in your browser, and no API key is needed.
+
 ## Installation
 
 Pick the method that matches what you are doing:
@@ -21,7 +24,7 @@ the local-checkout method below.
 1. Open **Customize** in the sidebar
 2. Search for **"adaption"**
 3. Click **Install**
-4. **Configure** → set `ADAPTION_API_KEY`
+4. [Sign in](#sign-in)
 
 ### From the Git repository
 
@@ -33,7 +36,7 @@ install the plugin from source:
 3. Paste `https://github.com/adaptionlabs/adaption-cursor-plugin`
 4. Add the `adaption` plugin, set **Marketplace Access**, and save
 5. In Cursor, open **Customize**, find **adaption**, and click **Install**
-6. **Configure** → set `ADAPTION_API_KEY`
+6. [Sign in](#sign-in)
 
 Cursor indexes a single commit from the branch the marketplace tracks. Push your
 changes and click **Refresh** (or enable **Auto Refresh**) before expecting them
@@ -61,24 +64,49 @@ outside that directory.
 Then:
 
 1. Run **Developer: Reload Window**
-2. **Customize → adaption → Configure** and set `ADAPTION_API_KEY`
+2. [Sign in](#sign-in)
 3. Under **MCP servers**, confirm `adaption` is connected
 
 Re-run the script and reload the window after every change. MCP servers do not
 hot-reload.
 
-Until `ADAPTION_API_KEY` holds a valid key, the server fails with
-`403 Only API keys are permitted on this endpoint` and exposes no tools. The
-endpoint accepts an Adaption API key only — not a session or OAuth token.
-
 `mcp.json` ships the production endpoint. To test against another environment,
 point `url` at it before running the script, and revert before committing.
 
-### Get Your API Key
+If the same MCP URL is also configured in your own `~/.cursor/mcp.json`, Cursor
+lists only that entry and hides the plugin's server. Remove the duplicate to
+test the plugin.
 
-1. Go to [adaptionlabs.ai/app/settings](https://adaptionlabs.ai/app/settings?tab=api_keys)
-2. Create a new API key
-3. Copy the key and enter it in the plugin configuration
+## Sign in
+
+1. Open **Customize → MCPs**. The `adaption` server shows **Needs
+   authentication**
+2. Click **Authenticate**. Cursor opens the Adaption sign-in page in your
+   browser
+3. Choose the organization and click **Authorize**
+
+The server switches to connected and lists its tools. To sign in again, for
+example with another organization, run **Cursor: Clear All MCP Tokens** and
+authenticate again.
+
+### Using an API key instead
+
+For headless use, such as the Cursor CLI on a CI runner, skip the plugin's
+server and add one with an Adaption API key to `~/.cursor/mcp.json`. Create the
+key at [adaptionlabs.ai/app/settings](https://adaptionlabs.ai/app/settings?tab=api_keys):
+
+```json
+{
+  "mcpServers": {
+    "adaption": {
+      "url": "https://api.prod.adaptionlabs.ai/api/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:ADAPTION_API_KEY}"
+      }
+    }
+  }
+}
+```
 
 ## Features
 
@@ -125,7 +153,7 @@ Once installed, you can interact with Adaption through natural conversation:
 ## Requirements
 
 - Cursor IDE
-- An Adaption account with an API key
+- An Adaption account
 
 ## Support
 

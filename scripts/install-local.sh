@@ -16,5 +16,4 @@ rsync -a --delete \
 
 echo "Installed to $dest"
 echo "In Cursor: Developer: Reload Window"
-echo "Then Plugins → adaption → Configure, and set ADAPTION_API_KEY."
-echo "The MCP server name is adaption."
+echo "Then open the adaption MCP server and click Authenticate."
