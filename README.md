@@ -89,11 +89,18 @@ The server switches to connected and lists its tools. To sign in again, for
 example with another organization, run **Cursor: Clear All MCP Tokens** and
 authenticate again.
 
+### Cursor CLI
+
+The Cursor CLI signs in with OAuth too. In an `agent` session, run `/mcp`,
+select the `adaption` server, and authenticate. The CLI opens the same sign-in
+page in your browser.
+
 ### Using an API key instead
 
-For headless use, such as the Cursor CLI on a CI runner, skip the plugin's
-server and add one with an Adaption API key to `~/.cursor/mcp.json`. Create the
-key at [adaptionlabs.ai/app/settings](https://adaptionlabs.ai/app/settings?tab=api_keys):
+For environments with no browser to complete the sign-in, such as a CI runner,
+skip the plugin's server and add one with an Adaption API key to
+`~/.cursor/mcp.json`. Create the key at
+[adaptionlabs.ai/app/settings](https://adaptionlabs.ai/app/settings?tab=api_keys):
 
 ```json
 {
