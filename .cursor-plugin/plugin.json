@@ -17,16 +17,5 @@
     "mcp",
     "ai-training"
   ],
-  "logo": "assets/logo.png",
-  "variables": {
-    "type": "object",
-    "properties": {
-      "ADAPTION_API_KEY": {
-        "type": "string",
-        "title": "Adaption API Key",
-        "description": "Your API key from https://adaptionlabs.ai/app/settings?tab=api_keys"
-      }
-    },
-    "required": ["ADAPTION_API_KEY"]
-  }
+  "logo": "assets/logo.png"
 }
