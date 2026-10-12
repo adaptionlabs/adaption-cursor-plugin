@@ -85,9 +85,7 @@ test the plugin.
    browser
 3. Choose the organization and click **Authorize**
 
-The server switches to connected and lists its tools. To sign in again, for
-example with another organization, run **Cursor: Clear All MCP Tokens** and
-authenticate again.
+The server switches to connected and lists its tools.
 
 ### Cursor CLI
 
